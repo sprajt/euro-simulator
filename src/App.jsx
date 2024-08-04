@@ -6,6 +6,7 @@ const ACTIONS = {
 
 const initialState = {
   games: [],
+  dataError: false,
 };
 
 function gamesReducer(state, action) {
@@ -13,6 +14,7 @@ function gamesReducer(state, action) {
     case ACTIONS.LOAD_DATA:
       return {
         ...state,
+        dataError: action.payload.status === "error" ? true : false,
         games: action.payload.data,
       };
     default:
@@ -21,7 +23,10 @@ function gamesReducer(state, action) {
 }
 
 function App() {
-  const [{ games }, dispatch] = useReducer(gamesReducer, initialState);
+  const [{ games, dataError }, dispatch] = useReducer(
+    gamesReducer,
+    initialState
+  );
 
   useEffect(function () {
     async function getData() {
@@ -41,8 +46,7 @@ function App() {
         // setGames(() => data.games);
         // setTitle(() => data.title);
       } catch (err) {
-        // dispatch({ type: ACTIONS.LOADING_DATA, payload: "failure" });
-        console.log(err.message);
+        dispatch({ type: ACTIONS.LOADING_DATA, payload: { status: "error" } });
       }
     }
     getData();
