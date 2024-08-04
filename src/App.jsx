@@ -1,8 +1,52 @@
+import { useEffect, useReducer } from "react";
 
+const ACTIONS = {
+  LOAD_DATA: "load data from outside server",
+};
+
+const initialState = {
+  games: [],
+};
+
+function gamesReducer(state, action) {
+  switch (action.type) {
+    case ACTIONS.LOAD_DATA:
+      return {
+        ...state,
+        games: action.payload.data,
+      };
+    default:
+      throw new Error("error");
+  }
+}
 
 function App() {
+  const [{ games }, dispatch] = useReducer(gamesReducer, initialState);
 
-  
+  useEffect(function () {
+    async function getData() {
+      try {
+        const res = await fetch("http://localhost:8000/data");
+        if (!res.ok) throw new Error("Something went wrong with fetching data");
+        const data = await res.json();
+
+        dispatch({
+          type: ACTIONS.LOAD_DATA,
+          payload: { status: "success", data: data.games },
+        });
+        // dispatch({
+        //   type: ACTIONS.LOADING_DATA,
+        //   payload: { status: "success", data: data.games },
+        // });
+        // setGames(() => data.games);
+        // setTitle(() => data.title);
+      } catch (err) {
+        // dispatch({ type: ACTIONS.LOADING_DATA, payload: "failure" });
+        console.log(err.message);
+      }
+    }
+    getData();
+  }, []);
 
   return (
     <div className="App">
@@ -13,17 +57,13 @@ function App() {
           <li className="game">
             <p>
               Poland vs Spain
-              <span>
-                0 : 0
-              </span>
+              <span>0 : 0</span>
             </p>
           </li>
           <li className="game">
             <p>
               Germany vs France
-              <span>
-                0 : 0
-              </span>
+              <span>0 : 0</span>
             </p>
           </li>
         </ul>
