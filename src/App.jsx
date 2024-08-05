@@ -5,6 +5,7 @@ const ACTIONS = {
 };
 
 const initialState = {
+  tournamentTitle: "",
   games: [],
   dataError: false,
 };
@@ -16,6 +17,7 @@ function gamesReducer(state, action) {
         ...state,
         dataError: action.payload.status === "error" ? true : false,
         games: action.payload.data,
+        tournamentTitle: action.payload.title,
       };
     default:
       throw new Error("error");
@@ -23,7 +25,7 @@ function gamesReducer(state, action) {
 }
 
 function App() {
-  const [{ games, dataError }, dispatch] = useReducer(
+  const [{ tournamentTitle, games, dataError }, dispatch] = useReducer(
     gamesReducer,
     initialState
   );
@@ -37,14 +39,8 @@ function App() {
 
         dispatch({
           type: ACTIONS.LOAD_DATA,
-          payload: { status: "success", data: data.games },
+          payload: { status: "success", data: data.games, title: data.title },
         });
-        // dispatch({
-        //   type: ACTIONS.LOADING_DATA,
-        //   payload: { status: "success", data: data.games },
-        // });
-        // setGames(() => data.games);
-        // setTitle(() => data.title);
       } catch (err) {
         dispatch({ type: ACTIONS.LOADING_DATA, payload: { status: "error" } });
       }
@@ -55,7 +51,7 @@ function App() {
   return (
     <div className="App">
       <div className="container">
-        <h4>Euro 2024</h4>
+        <h4>{tournamentTitle}</h4>
         <button>Start game</button>
 
         <AllGames games={games} />
