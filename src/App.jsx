@@ -83,4 +83,23 @@ function App() {
   );
 }
 
+function AllGames({games}){
+  return (
+    <ul>
+      <li>Game</li>
+    </ul>
+  )
+}
+
+function SingleGame({game}) {
+  return (
+    <li className="game">
+      <p>
+        {game.home.name} vs {game.away.name}
+        <span>0 : 0</span>
+      </p>
+    </li>
+  );
+}
+
 export default App;
