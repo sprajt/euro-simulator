@@ -57,20 +57,9 @@ function App() {
       <div className="container">
         <h4>Euro 2024</h4>
         <button>Start game</button>
-        <ul>
-          <li className="game">
-            <p>
-              Poland vs Spain
-              <span>0 : 0</span>
-            </p>
-          </li>
-          <li className="game">
-            <p>
-              Germany vs France
-              <span>0 : 0</span>
-            </p>
-          </li>
-        </ul>
+
+        <AllGames games={games} />
+
         <p className="total-goals">
           Total goals: <span>0</span>
         </p>
@@ -83,15 +72,17 @@ function App() {
   );
 }
 
-function AllGames({games}){
+function AllGames({ games }) {
   return (
     <ul>
-      <li>Game</li>
+      {games.map((game) => (
+        <SingleGame game={game} key={game.id} />
+      ))}
     </ul>
-  )
+  );
 }
 
-function SingleGame({game}) {
+function SingleGame({ game }) {
   return (
     <li className="game">
       <p>
