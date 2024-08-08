@@ -8,6 +8,7 @@ const initialState = {
   tournamentTitle: "",
   games: [],
   dataError: false,
+  buttonText: 'Start game'
 };
 
 function gamesReducer(state, action) {
@@ -25,7 +26,7 @@ function gamesReducer(state, action) {
 }
 
 function App() {
-  const [{ tournamentTitle, games, dataError }, dispatch] = useReducer(
+  const [{ tournamentTitle, games, dataError, buttonText }, dispatch] = useReducer(
     gamesReducer,
     initialState
   );
@@ -52,7 +53,7 @@ function App() {
     <div className="App">
       <div className="container">
         <h4>{tournamentTitle}</h4>
-        <Button status={'Start Game'} />
+        <Button buttonText={buttonText} />
 
         <AllGames games={games} />
 
@@ -68,9 +69,9 @@ function App() {
   );
 }
 
-function Button({status}){
+function Button({buttonText}){
   return(
-    <button>{status}</button>
+    <button>{buttonText}</button>
   )
 }
 
