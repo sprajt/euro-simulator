@@ -2,6 +2,7 @@ import { useEffect, useReducer } from "react";
 
 const ACTIONS = {
   LOAD_DATA: "load data from outside server",
+  START_GAME: "start game",
 };
 
 const initialState = {
@@ -10,6 +11,7 @@ const initialState = {
   dataError: false,
   buttonText: "Start game",
   time: 9000,
+  totalGoals: 0,
 };
 
 function gamesReducer(state, action) {
@@ -21,14 +23,21 @@ function gamesReducer(state, action) {
         games: action.payload.data,
         tournamentTitle: action.payload.title,
       };
+    case ACTIONS.START_GAME:
+      return {
+        ...state,
+        buttonText: action.payload.buttonText,
+      };
     default:
       throw new Error("error");
   }
 }
 
 function App() {
-  const [{ tournamentTitle, games, dataError, buttonText, time }, dispatch] =
-    useReducer(gamesReducer, initialState);
+  const [
+    { tournamentTitle, games, dataError, buttonText, time, totalGoals, action },
+    dispatch,
+  ] = useReducer(gamesReducer, initialState);
 
   useEffect(function () {
     async function getData() {
@@ -48,20 +57,33 @@ function App() {
     getData();
   }, []);
 
+  function handleGames() {
+    dispatch({
+      type: ACTIONS.START_GAME,
+      payload: {
+        buttonText: "Finish",
+      },
+    });
+  }
+
   return (
     <div className="App">
       <div className="container">
         <h4>{tournamentTitle}</h4>
-        <Button buttonText={buttonText} />
-
+        <Button action={handleGames} buttonText={buttonText} />
         <AllGames games={games} />
-
-        <p className="total-goals">
-          Total goals: <span>0</span>
-        </p>
+        <TotalGoals totalGoals={totalGoals} />
         <Timer time={time} />
       </div>
     </div>
+  );
+}
+
+function TotalGoals({ totalGoals }) {
+  return (
+    <p className="total-goals">
+      Total goals: <span>{totalGoals}</span>
+    </p>
   );
 }
 
@@ -74,8 +96,8 @@ function Timer({ time }) {
   );
 }
 
-function Button({ buttonText }) {
-  return <button>{buttonText}</button>;
+function Button({ buttonText, action }) {
+  return <button onClick={action}>{buttonText}</button>;
 }
 
 function AllGames({ games }) {
