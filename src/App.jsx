@@ -56,10 +56,10 @@ function App() {
 
         dispatch({
           type: ACTIONS.LOAD_DATA,
-          payload: { 
-            status: "success", 
-            data: data.games, 
-            title: data.title 
+          payload: {
+            status: "success",
+            data: data.games,
+            title: data.title,
           },
         });
       } catch (err) {
@@ -82,31 +82,32 @@ function App() {
       scorer = "away";
     }
 
-    const singleGame = {
-      id: game.id,
-      home: {
-        name: game.home.name,
-        odds: game.home.odds,
-        score: game.home.score + (scorer === "home" ? 1 : 0),
-      },
-      away: {
-        name: game.away.name,
-        odds: game.away.odds,
-        score: game.away.score + (scorer === "away" ? 1 : 0),
-      },
-      active: game.active,
-    };
-
-    const newGames = [
-      ...games.slice(0, gameId),
-      singleGame,
-      ...games.slice(gameId + 1),
-    ];
+    const updatedList = games.map((game) => {
+      if (Number(game.id) === gameId + 1) {
+        return {
+          ...game,
+          home: {
+            ...game.home,
+            score: game.home.score + (scorer === "home" ? 1 : 0),
+          },
+          away: {
+            ...game.away,
+            score: game.away.score + (scorer === "away" ? 1 : 0),
+          },
+          active: true,
+        };
+      } else {
+        return {
+          ...game,
+          active: false,
+        };
+      }
+    });
 
     dispatch({
       type: ACTIONS.SCORE_GOAL,
       payload: {
-        updatedGames: newGames,
+        updatedGames: updatedList,
         totalGoals: totalGoals + 1,
         timeLeft: time - 1000,
       },
@@ -172,7 +173,9 @@ function SingleGame({ game }) {
     <li className="game">
       <p>
         {game.home.name} vs {game.away.name}
-        <span>{game.home.score} : {game.away.score}</span>
+        <span>
+          {game.home.score} : {game.away.score}
+        </span>
       </p>
     </li>
   );
