@@ -57,7 +57,7 @@ function App() {
     getData();
   }, []);
 
-  function handleGames() {
+  function handleGameStatus() {
     dispatch({
       type: ACTIONS.START_GAME,
       payload: {
@@ -70,7 +70,7 @@ function App() {
     <div className="App">
       <div className="container">
         <h4>{tournamentTitle}</h4>
-        <Button action={handleGames} buttonText={buttonText} />
+        <Button action={handleGameStatus} buttonText={buttonText} />
         <AllGames games={games} />
         <TotalGoals totalGoals={totalGoals} />
         <Timer time={time} />
