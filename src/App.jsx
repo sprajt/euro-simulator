@@ -3,6 +3,7 @@ import { useEffect, useReducer } from "react";
 const ACTIONS = {
   LOAD_DATA: "load data from outside server",
   START_GAME: "start game",
+  SCORE_GOAL: "score random goal for one of the teams",
 };
 
 const initialState = {
@@ -28,6 +29,13 @@ function gamesReducer(state, action) {
         ...state,
         buttonText: action.payload.buttonText,
       };
+    case ACTIONS.SCORE_GOAL:
+      return {
+        ...state,
+        games: action.payload.updatedGames,
+        totalGoals: action.payload.totalGoals,
+        time: action.payload.timeLeft,
+      };
     default:
       throw new Error("error");
   }
@@ -48,14 +56,62 @@ function App() {
 
         dispatch({
           type: ACTIONS.LOAD_DATA,
-          payload: { status: "success", data: data.games, title: data.title },
+          payload: { 
+            status: "success", 
+            data: data.games, 
+            title: data.title 
+          },
         });
       } catch (err) {
-        dispatch({ type: ACTIONS.LOADING_DATA, payload: { status: "error" } });
+        dispatch({ type: ACTIONS.LOAD_DATA, payload: { status: "error" } });
       }
     }
     getData();
   }, []);
+
+  function scoreGoal() {
+    //select random game
+    const gameId = Math.floor(Math.random() * games.length);
+    const game = games[gameId];
+    const chances = Math.random();
+    let scorer = null;
+
+    if (chances <= game.home.odds) {
+      scorer = "home";
+    } else {
+      scorer = "away";
+    }
+
+    const singleGame = {
+      id: game.id,
+      home: {
+        name: game.home.name,
+        odds: game.home.odds,
+        score: game.home.score + (scorer === "home" ? 1 : 0),
+      },
+      away: {
+        name: game.away.name,
+        odds: game.away.odds,
+        score: game.away.score + (scorer === "away" ? 1 : 0),
+      },
+      active: game.active,
+    };
+
+    const newGames = [
+      ...games.slice(0, gameId),
+      singleGame,
+      ...games.slice(gameId + 1),
+    ];
+
+    dispatch({
+      type: ACTIONS.SCORE_GOAL,
+      payload: {
+        updatedGames: newGames,
+        totalGoals: totalGoals + 1,
+        timeLeft: time - 1000,
+      },
+    });
+  }
 
   function handleGameStatus() {
     dispatch({
@@ -70,6 +126,7 @@ function App() {
     <div className="App">
       <div className="container">
         <h4>{tournamentTitle}</h4>
+        <button onClick={scoreGoal}>test</button>
         <Button action={handleGameStatus} buttonText={buttonText} />
         <AllGames games={games} />
         <TotalGoals totalGoals={totalGoals} />
@@ -115,7 +172,7 @@ function SingleGame({ game }) {
     <li className="game">
       <p>
         {game.home.name} vs {game.away.name}
-        <span>0 : 0</span>
+        <span>{game.home.score} : {game.away.score}</span>
       </p>
     </li>
   );
