@@ -8,7 +8,8 @@ const initialState = {
   tournamentTitle: "",
   games: [],
   dataError: false,
-  buttonText: 'Start game'
+  buttonText: "Start game",
+  time: 9000,
 };
 
 function gamesReducer(state, action) {
@@ -26,10 +27,8 @@ function gamesReducer(state, action) {
 }
 
 function App() {
-  const [{ tournamentTitle, games, dataError, buttonText }, dispatch] = useReducer(
-    gamesReducer,
-    initialState
-  );
+  const [{ tournamentTitle, games, dataError, buttonText, time }, dispatch] =
+    useReducer(gamesReducer, initialState);
 
   useEffect(function () {
     async function getData() {
@@ -60,19 +59,23 @@ function App() {
         <p className="total-goals">
           Total goals: <span>0</span>
         </p>
-        <p className="total-goals">
-          Time left:
-          <span> 10:00</span>
-        </p>
+        <Timer time={time} />
       </div>
     </div>
   );
 }
 
-function Button({buttonText}){
-  return(
-    <button>{buttonText}</button>
-  )
+function Timer({ time }) {
+  return (
+    <p className="total-goals">
+      Time left:
+      <span> {Number(time / 1000)}s</span>
+    </p>
+  );
+}
+
+function Button({ buttonText }) {
+  return <button>{buttonText}</button>;
 }
 
 function AllGames({ games }) {
