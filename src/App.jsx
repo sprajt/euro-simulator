@@ -52,7 +52,7 @@ function App() {
     <div className="App">
       <div className="container">
         <h4>{tournamentTitle}</h4>
-        <button>Start game</button>
+        <Button status={'Start Game'} />
 
         <AllGames games={games} />
 
@@ -66,6 +66,12 @@ function App() {
       </div>
     </div>
   );
+}
+
+function Button({status}){
+  return(
+    <button>{status}</button>
+  )
 }
 
 function AllGames({ games }) {
