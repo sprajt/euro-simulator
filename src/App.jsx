@@ -16,6 +16,7 @@ const initialState = {
   time: 9000,
   totalGoals: 0,
   status: "before",
+  goalInterval: 1000,
 };
 
 function gamesReducer(state, action) {
@@ -32,6 +33,19 @@ function gamesReducer(state, action) {
         ...state,
         buttonText: "Finish",
         status: "ongoing",
+      };
+    case ACTIONS.STOP_GAME:
+      return {
+        ...state,
+        buttonText: "Restart",
+        status: "stopped",
+      };
+    case ACTIONS.RESTART_GAME:
+      return {
+        ...state,
+        buttonText: "Finish",
+        status: "before",
+        games: [],
       };
     case ACTIONS.SCORE_GOAL:
       return {
@@ -56,6 +70,7 @@ function App() {
       totalGoals,
       action,
       status,
+      goalInterval,
     },
     dispatch,
   ] = useReducer(gamesReducer, initialState);
@@ -84,17 +99,24 @@ function App() {
 
   useEffect(
     function () {
-      let intervalID;
+      let gameInterval;
+      let timeout;
       if (status === "ongoing") {
-        intervalID = setInterval(() => {
+        gameInterval = setInterval(() => {
           scoreGoal();
-        }, 1000);
+          console.log("interval active");
+        }, goalInterval);
+
+        timeout = setTimeout(function () {
+          clearInterval(gameInterval);
+        }, time);
       }
       return function () {
-        clearInterval(intervalID);
+        clearInterval(gameInterval);
+        clearTimeout(timeout);
       };
     },
-    [scoreGoal]
+    [scoreGoal, status, time]
   );
 
   function changeGameStatus() {
@@ -105,6 +127,10 @@ function App() {
     } else if (status === "ongoing") {
       dispatch({
         type: ACTIONS.STOP_GAME,
+      });
+    } else if (status === "stopped") {
+      dispatch({
+        type: ACTIONS.RESTART_GAME,
       });
     } else if (status === "finished") {
       dispatch({
@@ -162,7 +188,6 @@ function App() {
     <div className="App">
       <div className="container">
         <h4>{tournamentTitle}</h4>
-        <button onClick={scoreGoal}>test</button>
         <Button action={changeGameStatus} buttonText={buttonText} />
         <AllGames games={games} />
         <TotalGoals totalGoals={totalGoals} />
