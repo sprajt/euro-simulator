@@ -30,7 +30,8 @@ function gamesReducer(state, action) {
     case ACTIONS.START_GAME:
       return {
         ...state,
-        buttonText: action.payload.buttonText,
+        buttonText: "Finish",
+        status: "ongoing",
       };
     case ACTIONS.SCORE_GOAL:
       return {
@@ -157,21 +158,12 @@ function App() {
     });
   }
 
-  function handleGameStatus() {
-    dispatch({
-      type: ACTIONS.START_GAME,
-      payload: {
-        buttonText: "Finish",
-      },
-    });
-  }
-
   return (
     <div className="App">
       <div className="container">
         <h4>{tournamentTitle}</h4>
         <button onClick={scoreGoal}>test</button>
-        <Button action={handleGameStatus} buttonText={buttonText} />
+        <Button action={changeGameStatus} buttonText={buttonText} />
         <AllGames games={games} />
         <TotalGoals totalGoals={totalGoals} />
         <Timer time={time} />
