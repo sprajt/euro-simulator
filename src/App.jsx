@@ -107,7 +107,7 @@ function App() {
       });
     } else if (status === "finished") {
       dispatch({
-        type: ACTION.RESTART_GAME,
+        type: ACTIONS.RESTART_GAME,
       });
     }
   }
