@@ -3,6 +3,8 @@ import { useEffect, useReducer } from "react";
 const ACTIONS = {
   LOAD_DATA: "load data from outside server",
   START_GAME: "start game",
+  STOP_GAME: "stop ongoing game before time runs out",
+  RESTART_GAME: "restart game after timer runs out",
   SCORE_GOAL: "score random goal for one of the teams",
 };
 
@@ -13,6 +15,7 @@ const initialState = {
   buttonText: "Start game",
   time: 9000,
   totalGoals: 0,
+  status: "before",
 };
 
 function gamesReducer(state, action) {
@@ -43,7 +46,16 @@ function gamesReducer(state, action) {
 
 function App() {
   const [
-    { tournamentTitle, games, dataError, buttonText, time, totalGoals, action },
+    {
+      tournamentTitle,
+      games,
+      dataError,
+      buttonText,
+      time,
+      totalGoals,
+      action,
+      status,
+    },
     dispatch,
   ] = useReducer(gamesReducer, initialState);
 
@@ -68,6 +80,37 @@ function App() {
     }
     getData();
   }, []);
+
+  useEffect(
+    function () {
+      let intervalID;
+      if (status === "ongoing") {
+        intervalID = setInterval(() => {
+          scoreGoal();
+        }, 1000);
+      }
+      return function () {
+        clearInterval(intervalID);
+      };
+    },
+    [scoreGoal]
+  );
+
+  function changeGameStatus() {
+    if (status === "before") {
+      dispatch({
+        type: ACTIONS.START_GAME,
+      });
+    } else if (status === "ongoing") {
+      dispatch({
+        type: ACTIONS.STOP_GAME,
+      });
+    } else if (status === "finished") {
+      dispatch({
+        type: ACTION.RESTART_GAME,
+      });
+    }
+  }
 
   function scoreGoal() {
     //select random game
