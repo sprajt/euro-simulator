@@ -75,27 +75,33 @@ function App() {
     dispatch,
   ] = useReducer(gamesReducer, initialState);
 
-  useEffect(function () {
-    async function getData() {
-      try {
-        const res = await fetch("http://localhost:8000/data");
-        if (!res.ok) throw new Error("Something went wrong with fetching data");
-        const data = await res.json();
+  useEffect(
+    function () {
+      async function getData() {
+        try {
+          const res = await fetch("http://localhost:8000/data");
+          if (!res.ok)
+            throw new Error("Something went wrong with fetching data");
+          const data = await res.json();
 
-        dispatch({
-          type: ACTIONS.LOAD_DATA,
-          payload: {
-            status: "success",
-            data: data.games,
-            title: data.title,
-          },
-        });
-      } catch (err) {
-        dispatch({ type: ACTIONS.LOAD_DATA, payload: { status: "error" } });
+          dispatch({
+            type: ACTIONS.LOAD_DATA,
+            payload: {
+              status: "success",
+              data: data.games,
+              title: data.title,
+            },
+          });
+        } catch (err) {
+          dispatch({ type: ACTIONS.LOAD_DATA, payload: { status: "error" } });
+        }
       }
-    }
-    getData();
-  }, []);
+      if (status === "before") {
+        getData();
+      }
+    },
+    [status]
+  );
 
   useEffect(
     function () {
