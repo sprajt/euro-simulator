@@ -5,6 +5,7 @@ const ACTIONS = {
   START_GAME: "start game",
   STOP_GAME: "stop ongoing game before time runs out",
   RESTART_GAME: "restart game after timer runs out",
+  FINISH_GAME: "action taken when timer gets to 0",
   SCORE_GOAL: "score random goal for one of the teams",
 };
 
@@ -13,10 +14,10 @@ const initialState = {
   games: [],
   dataError: false,
   buttonText: "Start game",
-  time: 9000,
+  time: 90000,
   totalGoals: 0,
   status: "before",
-  goalInterval: 1000,
+  goalInterval: 10000,
 };
 
 function gamesReducer(state, action) {
@@ -43,9 +44,16 @@ function gamesReducer(state, action) {
     case ACTIONS.RESTART_GAME:
       return {
         ...state,
-        buttonText: "Finish",
+        buttonText: "Start game",
         status: "before",
-        games: [],
+        totalGoals: initialState.totalGoals,
+        time: initialState.time,
+      };
+    case ACTIONS.FINISH_GAME:
+      return {
+        ...state,
+        buttonText: "Restart",
+        status: "stopped",
       };
     case ACTIONS.SCORE_GOAL:
       return {
@@ -68,7 +76,6 @@ function App() {
       buttonText,
       time,
       totalGoals,
-      action,
       status,
       goalInterval,
     },
@@ -110,7 +117,6 @@ function App() {
       if (status === "ongoing") {
         gameInterval = setInterval(() => {
           scoreGoal();
-          console.log("interval active");
         }, goalInterval);
 
         timeout = setTimeout(function () {
@@ -123,6 +129,17 @@ function App() {
       };
     },
     [scoreGoal, status, time]
+  );
+
+  useEffect(
+    function () {
+      if (time === 0) {
+        dispatch({
+          type: ACTIONS.FINISH_GAME,
+        });
+      }
+    },
+    [time]
   );
 
   function changeGameStatus() {
@@ -185,7 +202,7 @@ function App() {
       payload: {
         updatedGames: updatedList,
         totalGoals: totalGoals + 1,
-        timeLeft: time - 1000,
+        timeLeft: time - 10000,
       },
     });
   }
